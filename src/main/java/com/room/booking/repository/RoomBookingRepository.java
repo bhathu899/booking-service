@@ -1,8 +1,7 @@
-package com.booking.reservation.repository;
+package com.room.booking.repository;
 
-import com.booking.reservation.entity.RoomBooking;
+import com.room.booking.entity.RoomBooking;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 
 import java.sql.Time;
 import java.util.List;

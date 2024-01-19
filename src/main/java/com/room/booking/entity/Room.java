@@ -1,14 +1,18 @@
-package com.booking.reservation.entity;
+package com.room.booking.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Created by KrishnaKo on 19/01/2024
  */
 @Entity
 @Table(name = "room")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class Room {
 
     @Id
@@ -19,5 +23,5 @@ public class Room {
     private String roomName;
 
     @Column(name = "size")
-    private String size;
+    private int size;
 }

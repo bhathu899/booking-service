@@ -1,8 +1,7 @@
-package com.booking.reservation.config;
+package com.room.booking.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.AnyDiscriminatorValues;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 

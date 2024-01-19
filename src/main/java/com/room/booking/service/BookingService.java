@@ -1,6 +1,7 @@
-package com.booking.reservation.service;
+package com.room.booking.service;
 
-import com.booking.reservation.entity.Room;
+import com.room.booking.entity.Room;
+import com.room.booking.model.BookingRoomRequest;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  */
 public interface BookingService {
 
-     List<Room> fetchAvailableRooms (String startTime,String endTime);
+     List<Room> fetchAvailableRooms (String startTime, String endTime);
 
-    Room reserveRoom();
+    Room reserveRoom(BookingRoomRequest bookingRoomRequest);
 }

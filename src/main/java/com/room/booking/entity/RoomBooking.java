@@ -1,7 +1,9 @@
-package com.booking.reservation.entity;
+package com.room.booking.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.sql.Time;
 
@@ -10,7 +12,9 @@ import java.sql.Time;
  */
 @Entity
 @Table(name = "room_booking")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class RoomBooking {
 
     @Id
