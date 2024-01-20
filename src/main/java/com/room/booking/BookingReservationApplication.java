@@ -11,6 +11,8 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 
 import java.time.Duration;
 
+import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
+
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @EnableCaching
@@ -25,6 +27,6 @@ public class BookingReservationApplication {
 		return RedisCacheConfiguration.defaultCacheConfig()
 				.entryTtl(Duration.ofMinutes(60))
 				.disableCachingNullValues()
-				.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+				.serializeValuesWith(fromSerializer(new GenericJackson2JsonRedisSerializer()));
 	}
 }

@@ -1,5 +1,6 @@
 package com.room.booking.entity;
 
+import com.room.booking.enums.RoomBookingEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +25,9 @@ public class Room {
 
     @Column(name = "room_size")
     private int size;
+
+    public Room(RoomBookingEnum roomBookingEnum) {
+        this.roomName = roomBookingEnum.getName();
+        this.size = roomBookingEnum.getSize();
+    }
 }

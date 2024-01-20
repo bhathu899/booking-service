@@ -22,6 +22,7 @@ public class BookingController {
     @Autowired
     BookingService bookingService;
 
+
     @PostMapping("/reserve")
    public ResponseEntity<Room> bookRoom(@RequestBody BookingRoomRequest bookingRoomRequest){
         return ResponseEntity.ok(bookingService.reserveRoom(bookingRoomRequest));

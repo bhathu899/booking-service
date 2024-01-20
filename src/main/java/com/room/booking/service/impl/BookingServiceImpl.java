@@ -9,6 +9,7 @@ import com.room.booking.model.BookingRoomRequest;
 import com.room.booking.repository.RoomBookingRepository;
 import com.room.booking.repository.RoomRepository;
 import com.room.booking.service.BookingService;
+import com.room.booking.validator.BookingTimeValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,6 +23,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static com.room.booking.exception.ErrorCodesEnum.MAINTENANCE_TIMINGS_ERROR;
+import static com.room.booking.exception.ErrorCodesEnum.NO_ROOMS_AVAILABLE_TIMING;
+import static com.room.booking.exception.ErrorCodesEnum.NO_ROOMS_AVAILABLE_TIMING_AND_PERSON;
+import static com.room.booking.validator.BookingTimeValidator.validateBookingTimings;
 
 /**
  * Created by KrishnaKo on 19/01/2024
@@ -41,10 +47,14 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Room> fetchAvailableRooms(String startTime, String endTime) {
-        checkForMaintenanceTimings(startTime,endTime);
+        validateTimings(startTime, endTime);
       return fetchVacantRooms(startTime,endTime);
     }
 
+    public void validateTimings(String startTime, String endTime){
+        validateBookingTimings(startTime, endTime);
+        checkForMaintenanceTimings(startTime,endTime);
+    }
     private List<Room> fetchVacantRooms(String startTime, String endTime){
         lock.readLock().lock();
         List<RoomBooking> roomBookingsList = checkForBookedRooms(startTime,endTime);
@@ -60,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
         List<Room> allRooms = fetchAllRooms();
         List<Room> availableRooms =  allRooms.stream().filter(room->checkForRoomAvailability(room,roomBookingsList)).toList();
         if(availableRooms.isEmpty()){
-            throw new NoRoomsAvailableException("No Rooms Available For Given Timing");
+            throw new NoRoomsAvailableException(NO_ROOMS_AVAILABLE_TIMING.getMessage());
         }
         return availableRooms;
     }
@@ -78,9 +88,9 @@ public class BookingServiceImpl implements BookingService {
     public Room reserveRoom(BookingRoomRequest bookingRoomRequest) {
         String startTime= bookingRoomRequest.getStartTime();
         String endTime= bookingRoomRequest.getEndTime();
-        int noOfPersons = bookingRoomRequest.getNoOfPersons();
-        checkForMaintenanceTimings(startTime,endTime);
+        validateTimings(startTime, endTime);
         List<Room> vacantRooms =  fetchVacantRooms(startTime, endTime);
+        int noOfPersons = bookingRoomRequest.getNoOfPersons();
         Room room =  findSuitableRoom(vacantRooms,noOfPersons);
         lock.writeLock().lock();
        try {
@@ -94,7 +104,7 @@ public class BookingServiceImpl implements BookingService {
 
     private void checkForMaintenanceTimings(String startTime,String endTime) {
         if(isOverlappingWithMaintenanceTime(startTime,endTime)){
-            throw new MaintenanceTimingException("Maintenance is under progress, For Given Timings");
+            throw new MaintenanceTimingException(MAINTENANCE_TIMINGS_ERROR.getMessage());
         }
     }
 
@@ -104,7 +114,7 @@ public class BookingServiceImpl implements BookingService {
          modifiedList.sort(Comparator.comparing(Room::getSize));
        Optional<Room> roomOptional = modifiedList.stream().filter(room->room.getSize()>=noOfPersons).findFirst();
        if(roomOptional.isEmpty()){
-           throw new NoRoomsAvailableException("No Rooms Available for Given Timing and No of Persons ");
+           throw new NoRoomsAvailableException(NO_ROOMS_AVAILABLE_TIMING_AND_PERSON.getMessage());
        }
        return roomOptional.get();
     }

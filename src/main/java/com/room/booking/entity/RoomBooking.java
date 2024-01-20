@@ -1,5 +1,6 @@
 package com.room.booking.entity;
 
+import com.room.booking.enums.RoomBookingEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,5 +43,12 @@ public class RoomBooking {
         this.endTime = Time.valueOf(LocalTime.parse(endTime));
         this.noOfPeople = noOfPeople;
         this.roomName = roomName;
+    }
+
+    public RoomBooking(String startTime, String endTime, RoomBookingEnum roomBookingEnum){
+        this.startTime = Time.valueOf(LocalTime.parse(startTime));
+        this.endTime = Time.valueOf(LocalTime.parse(endTime));
+        this.noOfPeople = roomBookingEnum.getSize();
+        this.roomName = roomBookingEnum.getName();
     }
 }
