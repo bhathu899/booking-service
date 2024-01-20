@@ -15,5 +15,5 @@ import java.util.List;
 @Getter
 @Setter
 public class MaintenanceTimeConfig {
-    List<String> maintenanceTiming;
+    List<String> timings;
 }

@@ -16,5 +16,5 @@ import lombok.NoArgsConstructor;
 public class BookingRoomRequest {
     private String startTime;
     private String endTime;
-    private String noOfPersons;
+    private int noOfPersons;
 }

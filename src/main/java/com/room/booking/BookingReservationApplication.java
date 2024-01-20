@@ -2,20 +2,22 @@ package com.room.booking;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
 @SpringBootApplication
-@EnableCaching
+@ConfigurationPropertiesScan
+//@EnableCaching
 public class BookingReservationApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BookingReservationApplication.class, args);
 	}
 
-	@Bean
+	/*@Bean
 	JedisConnectionFactory jedisConnectionFactory() {
 		return new JedisConnectionFactory();
 	}
@@ -25,5 +27,5 @@ public class BookingReservationApplication {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(jedisConnectionFactory());
 		return template;
-	}
+	}*/
 }

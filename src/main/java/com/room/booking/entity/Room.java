@@ -22,6 +22,6 @@ public class Room {
     @Column(name = "room_name")
     private String roomName;
 
-    @Column(name = "size")
+    @Column(name = "room_size")
     private int size;
 }

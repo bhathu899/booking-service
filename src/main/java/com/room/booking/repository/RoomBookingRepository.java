@@ -1,7 +1,9 @@
 package com.room.booking.repository;
 
 import com.room.booking.entity.RoomBooking;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.sql.Time;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.List;
  */
 public interface RoomBookingRepository extends JpaRepository<RoomBooking, Long> {
 
-    List<RoomBooking> findRoomBookingWhereBookingStartTimeBetweenStartTimeAndEndTimeAndBookingEndTimeBetweenStartTimeAndEndTime(Time bookingStartTime , Time bookingEndTime);
+    @Query(value = "SELECT * FROM room_booking WHERE start_time BETWEEN :bookingStartTime and :bookingEndTime OR end_time BETWEEN :bookingStartTime and :bookingEndTime", nativeQuery = true)
+    List<RoomBooking> findRoomBookingsDuringStartAndEndTime(@Param("bookingStartTime") Time bookingStartTime ,@Param("bookingEndTime")  Time bookingEndTime);
 
 }
