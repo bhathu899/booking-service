@@ -3,6 +3,8 @@ package com.room.booking.service.impl;
 import com.room.booking.config.MaintenanceTimeConfig;
 import com.room.booking.entity.Room;
 import com.room.booking.entity.RoomBooking;
+import com.room.booking.exception.MaintenanceTimingException;
+import com.room.booking.exception.NoRoomsAvailableException;
 import com.room.booking.model.BookingRoomRequest;
 import com.room.booking.repository.RoomBookingRepository;
 import com.room.booking.repository.RoomRepository;
@@ -18,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by KrishnaKo on 19/01/2024
@@ -33,22 +37,32 @@ public class BookingServiceImpl implements BookingService {
 
     @Autowired
     RoomBookingRepository roomBookingRepository;
+    private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     @Override
     public List<Room> fetchAvailableRooms(String startTime, String endTime) {
-      if(isOverlappingWithMaintenanceTime(startTime,endTime)){
-          throw new RuntimeException("Overlapping Maintenance Times");
-      }
+        checkForMaintenanceTimings(startTime,endTime);
       return fetchVacantRooms(startTime,endTime);
     }
 
     private List<Room> fetchVacantRooms(String startTime, String endTime){
+        lock.readLock().lock();
         List<RoomBooking> roomBookingsList = checkForBookedRooms(startTime,endTime);
-        return checkForVacantRooms(roomBookingsList);
+        List<Room> vacantRooms;
+        try {
+            vacantRooms = checkForVacantRooms(roomBookingsList);
+        } finally {
+            lock.readLock ().unlock ();
+        }
+        return vacantRooms;
     }
     private List<Room> checkForVacantRooms(List<RoomBooking> roomBookingsList) {
         List<Room> allRooms = fetchAllRooms();
-        return allRooms.stream().filter(room->checkForRoomAvailability(room,roomBookingsList)).toList();
+        List<Room> availableRooms =  allRooms.stream().filter(room->checkForRoomAvailability(room,roomBookingsList)).toList();
+        if(availableRooms.isEmpty()){
+            throw new NoRoomsAvailableException("No Rooms Available For Given Timing");
+        }
+        return availableRooms;
     }
 
     private boolean checkForRoomAvailability(Room room, List<RoomBooking> roomBookingsList) {
@@ -65,13 +79,23 @@ public class BookingServiceImpl implements BookingService {
         String startTime= bookingRoomRequest.getStartTime();
         String endTime= bookingRoomRequest.getEndTime();
         int noOfPersons = bookingRoomRequest.getNoOfPersons();
-        if(isOverlappingWithMaintenanceTime(startTime,endTime)){
-            throw new RuntimeException("Overlapping Maintenance Times");
-        }
+        checkForMaintenanceTimings(startTime,endTime);
         List<Room> vacantRooms =  fetchVacantRooms(startTime, endTime);
         Room room =  findSuitableRoom(vacantRooms,noOfPersons);
-        roomBookingRepository.save(new RoomBooking(startTime,endTime,room.getRoomName(),noOfPersons));
+        lock.writeLock().lock();
+       try {
+           roomBookingRepository.save(new RoomBooking(startTime, endTime, room.getRoomName(), noOfPersons));
+       }
+       finally{
+           lock.writeLock().lock();
+       }
         return room;
+    }
+
+    private void checkForMaintenanceTimings(String startTime,String endTime) {
+        if(isOverlappingWithMaintenanceTime(startTime,endTime)){
+            throw new MaintenanceTimingException("Maintenance is under progress, For Given Timings");
+        }
     }
 
     private Room findSuitableRoom(List<Room> vacantRooms, int noOfPersons) {
@@ -79,7 +103,10 @@ public class BookingServiceImpl implements BookingService {
        List<Room> modifiedList = new ArrayList<>(vacantRooms);
          modifiedList.sort(Comparator.comparing(Room::getSize));
        Optional<Room> roomOptional = modifiedList.stream().filter(room->room.getSize()>=noOfPersons).findFirst();
-        return roomOptional.orElseThrow(RuntimeException::new);
+       if(roomOptional.isEmpty()){
+           throw new NoRoomsAvailableException("No Rooms Available for Given Timing and No of Persons ");
+       }
+       return roomOptional.get();
     }
 
     private boolean isOverlappingWithMaintenanceTime(String startTime, String endTime) {
@@ -94,7 +121,7 @@ public class BookingServiceImpl implements BookingService {
     return startTimeLocalTime.isBefore(maintenanceEndTime) && maintenanceStartTime.isBefore(endTimeLocalTime);
     }
 
-//    @Cacheable("rooms")
+   @Cacheable("rooms")
     public List<Room> fetchAllRooms(){
         return roomRepository.findAll();
     }
