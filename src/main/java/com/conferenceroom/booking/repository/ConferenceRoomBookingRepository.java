@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface ConferenceRoomBookingRepository extends JpaRepository<ConferenceRoomBooking, Long> {
 
-    @Query(value = "SELECT * FROM room_booking WHERE start_time BETWEEN :bookingStartTime and :bookingEndTime OR end_time BETWEEN :bookingStartTime and :bookingEndTime", nativeQuery = true)
+    @Query(value = "SELECT * FROM conference_room_booking WHERE start_time BETWEEN :bookingStartTime and :bookingEndTime OR end_time BETWEEN :bookingStartTime and :bookingEndTime", nativeQuery = true)
     List<ConferenceRoomBooking> findRoomBookingsDuringStartAndEndTime(@Param("bookingStartTime") Time bookingStartTime , @Param("bookingEndTime")  Time bookingEndTime);
 
 }

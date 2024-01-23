@@ -93,7 +93,7 @@ public class ConferenceRoomBookingServiceImpl implements ConferenceRoomBookingSe
            conferenceRoomBookingRepository.save(new ConferenceRoomBooking(startTime, endTime, conferenceRoom.getRoomName(), noOfPersons));
        }
        finally{
-           lock.writeLock().lock();
+           lock.writeLock().unlock();
        }
         return conferenceRoom;
     }
