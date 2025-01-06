@@ -1,4 +1,4 @@
-package com.booking.persistence.service.impl;
+package com.booking.persistence.service.model;
 
 import lombok.Builder;
 

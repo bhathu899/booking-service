@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
     @Query(value = "SELECT * FROM conference_room_booking WHERE start_time BETWEEN " +
                    ":bookingStartTime and :bookingEndTime OR end_time BETWEEN :bookingStartTime " +
                    "and :bookingEndTime", nativeQuery = true)
-    List<BookingEntity> findBookings(@Param("bookingStartTime") Time bookingStartTime,
-                                     @Param("bookingEndTime") Time bookingEndTime);
+    List<BookingEntity> findBookings(@Param("bookingStartTime") LocalTime bookingStartTime,
+                                     @Param("bookingEndTime") LocalTime bookingEndTime);
 
 }

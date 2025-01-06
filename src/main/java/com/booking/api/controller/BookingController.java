@@ -1,11 +1,11 @@
-package com.booking.controller;
+package com.booking.api.controller;
 
-import com.booking.controller.dto.AvailableRoomsDto;
-import com.booking.controller.dto.BookingRequestDto;
-import com.booking.controller.dto.BookingResultDto;
-import com.booking.errors.ErrorDto;
-import com.booking.persistence.service.impl.Room;
-import com.booking.persistence.service.impl.RoomSearchResult;
+import com.booking.api.controller.dto.BookingRequestDto;
+import com.booking.api.controller.dto.BookingResultDto;
+import com.booking.api.controller.dto.AvailableRoomsDto;
+import com.booking.api.errors.ErrorDto;
+import com.booking.persistence.service.model.Room;
+import com.booking.persistence.service.model.RoomSearchResult;
 import com.booking.service.BookingManager;
 import com.booking.service.exception.MaintenanceTimeOverlapException;
 import com.booking.service.exception.NoRoomsAvailableException;

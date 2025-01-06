@@ -1,6 +1,7 @@
 package com.booking.persistence.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,16 +11,17 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "room")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class RoomEntity{
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private long id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "room_name") private String roomName;
+    @Column(name = "room_name",nullable = false)
+    private String roomName;
 
-    @Column(name = "room_size") private int size;
+    @Column(name = "room_size",nullable = false)
+    private int size;
 
-    public RoomEntity(long id, String roomName, int size) {}
 }

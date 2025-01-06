@@ -1,7 +1,7 @@
 package com.booking.persistence.service.impl;
 
-import com.booking.persistence.BookingCommand;
-import com.booking.persistence.FindBookingCommand;
+import com.booking.persistence.service.BookingCommand;
+import com.booking.persistence.service.FindBookingCommand;
 import com.booking.persistence.entity.BookingEntity;
 import com.booking.persistence.repository.BookingRepository;
 import com.booking.persistence.service.BookingService;
@@ -10,7 +10,6 @@ import com.booking.service.model.Booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.CollectionUtils;
 
-import java.sql.Time;
 import java.util.List;
 
 /**
@@ -23,8 +22,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Booking> findBookings(FindBookingCommand findBookingCommand) throws NoRoomsAvailableException {
-        List<BookingEntity> bookingEntityList = bookingRepository.findBookings(Time.valueOf(findBookingCommand.startTime()),
-                                                                               Time.valueOf(findBookingCommand.endTime()));
+        List<BookingEntity> bookingEntityList = bookingRepository.findBookings(findBookingCommand.startTime(),
+                                                                               findBookingCommand.endTime());
 
         if (CollectionUtils.isEmpty(bookingEntityList)) {
             throw new NoRoomsAvailableException("No rooms available for given Start and end time ");
@@ -45,10 +44,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private BookingEntity mapToEntity(BookingCommand bookingCommand) {
-
-        return new BookingEntity(bookingCommand.interval()
-                                               .startTimeInclusive(), bookingCommand.interval()
-                                                                                    .endTimeExclusive(), bookingCommand.roomId(),
+        return new BookingEntity(bookingCommand.roomId(),
+                                 bookingCommand.interval().startTimeInclusive(),
+                                 bookingCommand.interval().endTimeExclusive(),
                                  bookingCommand.noOfPersons());
     }
 }

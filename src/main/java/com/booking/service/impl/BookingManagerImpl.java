@@ -2,12 +2,12 @@ package com.booking.service.impl;
 
 import com.booking.config.MaintenanceTimeConfig;
 import com.booking.config.MaintenanceTimeConfig.TimeInterval;
-import com.booking.persistence.BookingCommand;
-import com.booking.persistence.FindBookingCommand;
+import com.booking.persistence.service.BookingCommand;
+import com.booking.persistence.service.FindBookingCommand;
 import com.booking.persistence.service.BookingService;
 import com.booking.persistence.service.RoomService;
-import com.booking.persistence.service.impl.Room;
-import com.booking.persistence.service.impl.RoomSearchResult;
+import com.booking.persistence.service.model.Room;
+import com.booking.persistence.service.model.RoomSearchResult;
 import com.booking.service.BookingManager;
 import com.booking.service.exception.MaintenanceTimeOverlapException;
 import com.booking.service.exception.NoRoomsAvailableException;
@@ -20,8 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.booking.persistence.service.impl.RoomSearchResult.EmptyRoomReason.ALL_ROOMS_BOOKED;
-import static com.booking.persistence.service.impl.RoomSearchResult.EmptyRoomReason.OVERLAP_WITH_MAINTENANCE_TIME;
+import static com.booking.persistence.service.model.RoomSearchResult.EmptyRoomReason.ALL_ROOMS_BOOKED;
+import static com.booking.persistence.service.model.RoomSearchResult.EmptyRoomReason.OVERLAP_WITH_MAINTENANCE_TIME;
 
 /**
  * Created by KrishnaKo on 19/01/2024

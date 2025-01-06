@@ -1,7 +1,7 @@
 package com.booking.service;
 
-import com.booking.persistence.service.impl.Room;
-import com.booking.persistence.service.impl.RoomSearchResult;
+import com.booking.persistence.service.model.Room;
+import com.booking.persistence.service.model.RoomSearchResult;
 import com.booking.service.exception.MaintenanceTimeOverlapException;
 import com.booking.service.exception.NoRoomsAvailableException;
 import com.booking.service.model.BookingRequest;

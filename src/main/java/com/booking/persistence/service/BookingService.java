@@ -1,7 +1,5 @@
 package com.booking.persistence.service;
 
-import com.booking.persistence.BookingCommand;
-import com.booking.persistence.FindBookingCommand;
 import com.booking.service.exception.NoRoomsAvailableException;
 import com.booking.service.model.Booking;
 

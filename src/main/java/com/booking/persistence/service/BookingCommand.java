@@ -1,4 +1,4 @@
-package com.booking.persistence;
+package com.booking.persistence.service;
 
 import com.booking.shared.model.Interval;
 import lombok.Builder;
@@ -8,5 +8,5 @@ import lombok.Builder;
  */
 @Builder
 public record BookingCommand(
-        int roomId, int noOfPersons, Interval interval
+        Long roomId, int noOfPersons, Interval interval
 ) {}

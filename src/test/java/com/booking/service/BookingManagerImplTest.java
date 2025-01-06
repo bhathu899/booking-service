@@ -3,7 +3,7 @@ package com.booking.service;
 import com.booking.config.MaintenanceTimeConfig;
 import com.booking.persistence.repository.BookingRepository;
 import com.booking.persistence.repository.RoomRepository;
-import com.booking.persistence.service.impl.Room;
+import com.booking.persistence.service.model.Room;
 import com.booking.service.exception.NoRoomsAvailableException;
 import com.booking.service.impl.BookingManagerImpl;
 import com.booking.service.model.Booking;

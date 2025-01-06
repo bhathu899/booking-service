@@ -1,10 +1,12 @@
 package com.booking.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
 import java.sql.Time;
 import java.time.LocalTime;
@@ -17,24 +19,30 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class BookingEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private long id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "room_id") private int roomId;
+    //add foreign key constraints to room table
+    @Column(name = "room_id",nullable = false)
+    private Long roomId;
 
-    @Column(name = "start_time") private Time startTime;
+    @Column(name = "start_time",nullable = false)
+    private LocalTime startTime;
 
-    @Column(name = "end_time") private Time endTime;
+    @Column(name = "end_time",nullable = false)
+    private LocalTime endTime;
 
-    @Column(name = "people_size") private int noOfPeople;
+    @Column(name = "people_size",nullable = false)
+    @Min(2)
+    @Max(20)
+    private int noOfPeople;
 
-    public BookingEntity(LocalTime startTime, LocalTime endTime, int roomId, int noOfPeople) {
-        this.startTime = Time.valueOf(startTime);
-        this.endTime = Time.valueOf(endTime);
-        this.noOfPeople = noOfPeople;
+    public BookingEntity(Long roomId, LocalTime startTime, LocalTime endTime, int noOfPeople) {
         this.roomId = roomId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.noOfPeople = noOfPeople;
     }
-
 }

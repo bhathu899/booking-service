@@ -1,6 +1,6 @@
 package com.booking.persistence.service;
 
-import com.booking.persistence.service.impl.RoomSearchResult;
+import com.booking.persistence.service.model.RoomSearchResult;
 
 /**
  * Created by KrishnaKo on 08/12/2024

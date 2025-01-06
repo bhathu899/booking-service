@@ -1,4 +1,4 @@
-package com.booking.controller.dto;
+package com.booking.api.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
