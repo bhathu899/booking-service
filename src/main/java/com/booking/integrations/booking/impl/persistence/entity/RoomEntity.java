@@ -1,4 +1,4 @@
-package com.booking.persistence.entity;
+package com.booking.integrations.booking.impl.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

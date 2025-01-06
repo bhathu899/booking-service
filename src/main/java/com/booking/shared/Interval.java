@@ -1,6 +1,5 @@
-package com.booking.shared.model;
+package com.booking.shared;
 
-import lombok.Builder;
 
 import java.time.LocalTime;
 

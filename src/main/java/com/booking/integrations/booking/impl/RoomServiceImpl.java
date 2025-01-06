@@ -1,10 +1,10 @@
-package com.booking.persistence.service.impl;
+package com.booking.integrations.booking.impl;
 
-import com.booking.persistence.entity.RoomEntity;
-import com.booking.persistence.repository.RoomRepository;
-import com.booking.persistence.service.RoomService;
-import com.booking.persistence.service.model.Room;
-import com.booking.persistence.service.model.RoomSearchResult;
+import com.booking.integrations.booking.impl.persistence.entity.RoomEntity;
+import com.booking.integrations.booking.impl.persistence.repository.RoomRepository;
+import com.booking.integrations.booking.service.RoomService;
+import com.booking.integrations.booking.service.model.Room;
+import com.booking.integrations.booking.service.model.RoomSearchResult;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

@@ -1,12 +1,12 @@
 package com.booking.service;
 
-import com.booking.config.MaintenanceTimeConfig;
-import com.booking.persistence.repository.BookingRepository;
-import com.booking.persistence.repository.RoomRepository;
-import com.booking.persistence.service.model.Room;
-import com.booking.service.exception.NoRoomsAvailableException;
+import com.booking.service.config.MaintenanceTimeConfig;
+import com.booking.integrations.booking.impl.persistence.repository.BookingRepository;
+import com.booking.integrations.booking.impl.persistence.repository.RoomRepository;
+import com.booking.integrations.booking.service.model.Room;
+import com.booking.integrations.booking.service.exception.AllRoomsAreBookedException;
 import com.booking.service.impl.BookingManagerImpl;
-import com.booking.service.model.Booking;
+import com.booking.integrations.booking.service.model.Booking;
 import com.booking.service.model.BookingRequest;
 import com.booking.utils.TestUtils;
 import org.junit.jupiter.api.Test;
@@ -122,11 +122,11 @@ class BookingManagerImplTest {
         when(maintenanceTimeConfig.getTimings()).thenReturn(Collections.singletonList("09:00-09:15"));
         when(roomBookingRepository.findRoomBookingsDuringStartAndEndTime(any(), any())).thenReturn(TestUtils.allRoomsBooked());
         when(roomRepository.findAll()).thenReturn(TestUtils.fetchAllRooms());
-        NoRoomsAvailableException noRoomsAvailableException = assertThrows(NoRoomsAvailableException.class,
-                                                                           () -> bookingService.reserveRoom(
+        AllRoomsAreBookedException allRoomsAreBookedException = assertThrows(AllRoomsAreBookedException.class,
+                                                                             () -> bookingService.reserveRoom(
                                                                                    TestUtils.fetchBookingRoomRequestPayload()));
-        assertNotNull(noRoomsAvailableException);
-        assertEquals(NO_ROOMS_AVAILABLE_TIMING.getMessage(), noRoomsAvailableException.getMessage());
+        assertNotNull(allRoomsAreBookedException);
+        assertEquals(NO_ROOMS_AVAILABLE_TIMING.getMessage(), allRoomsAreBookedException.getMessage());
 
     }
 
@@ -137,10 +137,10 @@ class BookingManagerImplTest {
         when(maintenanceTimeConfig.getTimings()).thenReturn(Collections.singletonList("09:00-09:15"));
         when(roomBookingRepository.findRoomBookingsDuringStartAndEndTime(any(), any())).thenReturn(TestUtils.fetchRoomBookings());
         when(roomRepository.findAll()).thenReturn(TestUtils.fetchAllRooms());
-        NoRoomsAvailableException noRoomsAvailableException = assertThrows(NoRoomsAvailableException.class,
-                                                                           () -> bookingService.reserveRoom(bookingRoomRequest));
-        assertNotNull(noRoomsAvailableException);
-        assertEquals(NO_ROOMS_AVAILABLE_TIMING_AND_PERSON.getMessage(), noRoomsAvailableException.getMessage());
+        AllRoomsAreBookedException allRoomsAreBookedException = assertThrows(AllRoomsAreBookedException.class,
+                                                                             () -> bookingService.reserveRoom(bookingRoomRequest));
+        assertNotNull(allRoomsAreBookedException);
+        assertEquals(NO_ROOMS_AVAILABLE_TIMING_AND_PERSON.getMessage(), allRoomsAreBookedException.getMessage());
 
     }
 

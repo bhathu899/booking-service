@@ -2,8 +2,8 @@ package com.booking.utils;
 
 
 import com.booking.api.controller.dto.BookingRequestDto;
-import com.booking.persistence.entity.BookingEntity;
-import com.booking.persistence.service.model.Room;
+import com.booking.integrations.booking.impl.persistence.entity.BookingEntity;
+import com.booking.integrations.booking.service.model.Room;
 
 import java.time.LocalTime;
 import java.util.ArrayList;

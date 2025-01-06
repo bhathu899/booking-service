@@ -1,4 +1,4 @@
-package com.booking.persistence.service;
+package com.booking.integrations.booking.service.model;
 
 import java.time.LocalTime;
 

@@ -1,6 +1,6 @@
-package com.booking.persistence.service;
+package com.booking.integrations.booking.service.model;
 
-import com.booking.shared.model.Interval;
+import com.booking.shared.Interval;
 import lombok.Builder;
 
 /**

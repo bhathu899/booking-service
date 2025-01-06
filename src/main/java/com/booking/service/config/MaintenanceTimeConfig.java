@@ -1,4 +1,4 @@
-package com.booking.config;
+package com.booking.service.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

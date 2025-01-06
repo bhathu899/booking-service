@@ -4,13 +4,13 @@ import com.booking.api.controller.dto.BookingRequestDto;
 import com.booking.api.controller.dto.BookingResultDto;
 import com.booking.api.controller.dto.AvailableRoomsDto;
 import com.booking.api.errors.ErrorDto;
-import com.booking.persistence.service.model.Room;
-import com.booking.persistence.service.model.RoomSearchResult;
+import com.booking.integrations.booking.service.model.Room;
+import com.booking.integrations.booking.service.model.RoomSearchResult;
 import com.booking.service.BookingManager;
 import com.booking.service.exception.MaintenanceTimeOverlapException;
-import com.booking.service.exception.NoRoomsAvailableException;
+import com.booking.service.exception.NoSuitableRoomsException;
 import com.booking.service.model.BookingRequest;
-import com.booking.shared.model.Interval;
+import com.booking.shared.Interval;
 import jakarta.validation.constraints.FutureOrPresent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class BookingController {
     //Use mock mvc for controller tests
     @PostMapping("/bookings")
     public ResponseEntity<BookingResultDto> bookRoom(@RequestBody BookingRequestDto bookingRequestDto)
-            throws MaintenanceTimeOverlapException, NoRoomsAvailableException {
+            throws MaintenanceTimeOverlapException, NoSuitableRoomsException {
         Interval interval = new Interval(bookingRequestDto.startTime(), bookingRequestDto.endTime());
         BookingRequest request = new BookingRequest(interval, bookingRequestDto.noOfPersons());
 
@@ -50,7 +50,7 @@ public class BookingController {
 
     @GetMapping("/rooms/available")
     public ResponseEntity<?> fetchAvailableRooms(@RequestParam @FutureOrPresent LocalTime startTime,
-                                                 @RequestParam @FutureOrPresent LocalTime endTime) throws NoRoomsAvailableException {
+                                                 @RequestParam @FutureOrPresent LocalTime endTime) throws NoSuitableRoomsException {
 
         Interval interval = new Interval(startTime,endTime);
 
@@ -83,9 +83,9 @@ public class BookingController {
     }
 
 
-    @ExceptionHandler(value = NoRoomsAvailableException.class)
+    @ExceptionHandler(value = NoSuitableRoomsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public @ResponseBody ErrorDto handleNoRoomsAvailableException(NoRoomsAvailableException ex) {
+    public @ResponseBody ErrorDto handleNoRoomsAvailableException(NoSuitableRoomsException ex) {
         log.error("Exception details are:", ex);
         return new ErrorDto(ERROR_NO_ROOMS_AVAILABLE, "No Rooms are Available for this no of persons");
     }
