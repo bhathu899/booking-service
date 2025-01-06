@@ -28,44 +28,32 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/booking")
+@RequestMapping("/v1")
 public class BookingController {
+    public static final String ERROR_MAINTENANCE_TIMINGS_OVERLAPPED = "BKS-001";
+    public static final String ERROR_NO_ROOMS_AVAILABLE = "BKS-002";
     private final BookingManager bookingManager;
 
     //Use mock mvc for controller tests
-    @PostMapping("/reserve")
+    @PostMapping("/bookings")
     public ResponseEntity<BookingResultDto> bookRoom(@RequestBody BookingRequestDto bookingRequestDto)
             throws MaintenanceTimeOverlapException, NoRoomsAvailableException {
-        BookingRequest request = mapToRequest(bookingRequestDto);
+        Interval interval = new Interval(bookingRequestDto.startTime(), bookingRequestDto.endTime());
+        BookingRequest request = new BookingRequest(interval, bookingRequestDto.noOfPersons());
+
         Room room = bookingManager.reserveRoom(request);
-        return ResponseEntity.ok(mapToResponse(room));
+
+        BookingResultDto bookingResultDto = new BookingResultDto(room.name(), room.size());
+        return ResponseEntity.ok(bookingResultDto);
     }
 
-    private BookingRequest mapToRequest(BookingRequestDto bookingRequestDto) {
-        return BookingRequest.builder()
-                             .interval(Interval.builder()
-                                               .startTimeInclusive(bookingRequestDto.startTime())
-                                               .endTimeExclusive(bookingRequestDto.endTime())
-                                               .build())
-                             .noOfPersons(bookingRequestDto.noOfPersons())
-                             .build();
-    }
 
-    private BookingResultDto mapToResponse(Room room) {
-        return BookingResultDto.builder()
-                               .size(room.size())
-                               .name(room.name())
-                               .build();
-    }
-
-    @GetMapping("/available")
+    @GetMapping("/rooms/available")
     public ResponseEntity<?> fetchAvailableRooms(@RequestParam @FutureOrPresent LocalTime startTime,
                                                  @RequestParam @FutureOrPresent LocalTime endTime) throws NoRoomsAvailableException {
 
-        Interval interval = Interval.builder()
-                                    .startTimeInclusive(startTime)
-                                    .endTimeExclusive(endTime)
-                                    .build();
+        Interval interval = new Interval(startTime,endTime);
+
         RoomSearchResult roomSearchResult = bookingManager.fetchAvailableRooms(interval);
 
         if (roomSearchResult.reason() != null) {
@@ -73,14 +61,25 @@ public class BookingController {
                 case OVERLAP_WITH_MAINTENANCE_TIME -> "Maintenance timings are overlapped with Given Timings";
                 case ALL_ROOMS_BOOKED -> "All rooms are booked for the Given timings";
             };
-            return new ResponseEntity<>(new ErrorDto("BS-003", message), HttpStatus.BAD_REQUEST);
+            ErrorDto errorDto = new ErrorDto(ERROR_NO_ROOMS_AVAILABLE, message);
+            return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
         }
+
+        AvailableRoomsDto availableRoomsDto = mapToDto(roomSearchResult);
+        return ResponseEntity.ok(availableRoomsDto);
+    }
+
+    private AvailableRoomsDto mapToDto(RoomSearchResult roomSearchResult) {
         List<AvailableRoomsDto.Room> rooms = roomSearchResult.rooms()
                                                              .stream()
-                                                             .map(room -> new AvailableRoomsDto.Room(room.name(), room.size()))
+                                                             .map(BookingController::mapToDto)
                                                              .toList();
 
-        return ResponseEntity.ok(new AvailableRoomsDto(rooms));
+        return new AvailableRoomsDto(rooms);
+    }
+
+    private static AvailableRoomsDto.Room mapToDto(Room room) {
+        return new AvailableRoomsDto.Room(room.name(), room.size());
     }
 
 
@@ -88,7 +87,7 @@ public class BookingController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public @ResponseBody ErrorDto handleNoRoomsAvailableException(NoRoomsAvailableException ex) {
         log.error("Exception details are:", ex);
-        return new ErrorDto("BKS-002", "No Rooms are Available for this no of persons");
+        return new ErrorDto(ERROR_NO_ROOMS_AVAILABLE, "No Rooms are Available for this no of persons");
     }
 
 
@@ -96,7 +95,7 @@ public class BookingController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public @ResponseBody ErrorDto handleMaintenanceTimingException(MaintenanceTimeOverlapException ex) {
         log.error("Exception details are:", ex);
-        return new ErrorDto("BKS-001", "Maintenance Timings are Overlapped ");
+        return new ErrorDto(ERROR_MAINTENANCE_TIMINGS_OVERLAPPED, "Maintenance Timings are Overlapped ");
     }
 
 }

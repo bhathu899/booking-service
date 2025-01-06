@@ -6,5 +6,4 @@ import lombok.Builder;
 /**
  * Created by KrishnaKo on 08/12/2024
  */
-@Builder
 public record BookingRequest(Interval interval, int noOfPersons) {}
