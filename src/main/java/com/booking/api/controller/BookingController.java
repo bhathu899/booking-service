@@ -1,17 +1,18 @@
 package com.booking.api.controller;
 
+import com.booking.api.controller.dto.AvailableRoomsDto;
 import com.booking.api.controller.dto.BookingRequestDto;
 import com.booking.api.controller.dto.BookingResultDto;
-import com.booking.api.controller.dto.AvailableRoomsDto;
 import com.booking.api.errors.ErrorDto;
 import com.booking.integrations.booking.service.model.Room;
 import com.booking.integrations.booking.service.model.RoomSearchResult;
 import com.booking.service.BookingManager;
+import com.booking.service.exception.InvalidTimeException;
 import com.booking.service.exception.MaintenanceTimeOverlapException;
 import com.booking.service.exception.NoSuitableRoomsException;
 import com.booking.service.model.BookingRequest;
 import com.booking.shared.Interval;
-import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,10 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalTime;
 import java.util.List;
 
-/**
- * Created by KrishnaKo on 19/01/2024
- */
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -32,11 +29,11 @@ import java.util.List;
 public class BookingController {
     public static final String ERROR_MAINTENANCE_TIMINGS_OVERLAPPED = "BKS-001";
     public static final String ERROR_NO_ROOMS_AVAILABLE = "BKS-002";
+    public static final String ERROR_INVALID_INPUT_TIME = "BKS-003";
     private final BookingManager bookingManager;
 
-    //Use mock mvc for controller tests
     @PostMapping("/bookings")
-    public ResponseEntity<BookingResultDto> bookRoom(@RequestBody BookingRequestDto bookingRequestDto)
+    public ResponseEntity<BookingResultDto> bookRoom(@Valid @RequestBody BookingRequestDto bookingRequestDto)
             throws MaintenanceTimeOverlapException, NoSuitableRoomsException {
         Interval interval = new Interval(bookingRequestDto.startTime(), bookingRequestDto.endTime());
         BookingRequest request = new BookingRequest(interval, bookingRequestDto.noOfPersons());
@@ -49,11 +46,9 @@ public class BookingController {
 
 
     @GetMapping("/rooms/available")
-    public ResponseEntity<?> fetchAvailableRooms(@RequestParam @FutureOrPresent LocalTime startTime,
-                                                 @RequestParam @FutureOrPresent LocalTime endTime) throws NoSuitableRoomsException {
-
-        Interval interval = new Interval(startTime,endTime);
-
+    public ResponseEntity<?> fetchAvailableRooms(@RequestParam LocalTime startTime, @RequestParam LocalTime endTime)
+            throws NoSuitableRoomsException, InvalidTimeException {
+        Interval interval = new Interval(startTime, endTime);
         RoomSearchResult roomSearchResult = bookingManager.fetchAvailableRooms(interval);
 
         if (roomSearchResult.reason() != null) {
@@ -96,6 +91,13 @@ public class BookingController {
     public @ResponseBody ErrorDto handleMaintenanceTimingException(MaintenanceTimeOverlapException ex) {
         log.error("Exception details are:", ex);
         return new ErrorDto(ERROR_MAINTENANCE_TIMINGS_OVERLAPPED, "Maintenance Timings are Overlapped ");
+    }
+
+    @ExceptionHandler(value = InvalidTimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorDto handleInvalidTimeException(InvalidTimeException ex) {
+        log.error("Exception details are:", ex);
+        return new ErrorDto(ERROR_INVALID_INPUT_TIME, ex.getMessage());
     }
 
 }

@@ -5,29 +5,22 @@ import com.booking.integrations.booking.service.model.FindBookingCommand;
 import com.booking.integrations.booking.service.model.BookingCommand;
 import com.booking.integrations.booking.impl.persistence.entity.BookingEntity;
 import com.booking.integrations.booking.impl.persistence.repository.BookingRepository;
-import com.booking.integrations.booking.service.exception.AllRoomsAreBookedException;
 import com.booking.integrations.booking.service.model.Booking;
 import lombok.RequiredArgsConstructor;
-import org.springframework.util.CollectionUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by KrishnaKo on 08/12/2024
- */
-@RequiredArgsConstructor
 
+@RequiredArgsConstructor
+@Service
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
 
     @Override
-    public List<Booking> findBookings(FindBookingCommand findBookingCommand) throws AllRoomsAreBookedException {
+    public List<Booking> findBookings(FindBookingCommand findBookingCommand){
         List<BookingEntity> bookingEntityList = bookingRepository.findBookings(findBookingCommand.startTime(),
                                                                                findBookingCommand.endTime());
-
-        if (CollectionUtils.isEmpty(bookingEntityList)) {
-            throw new AllRoomsAreBookedException("No rooms available for given Start and end time ");
-        }
         return mapEntityToDto(bookingEntityList);
     }
 

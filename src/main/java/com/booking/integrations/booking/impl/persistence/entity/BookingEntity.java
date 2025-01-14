@@ -11,9 +11,7 @@ import lombok.*;
 import java.sql.Time;
 import java.time.LocalTime;
 
-/**
- * Created by KrishnaKo on 19/01/2024
- */
+
 @Entity
 @Table(name = "room_booking")
 @Getter

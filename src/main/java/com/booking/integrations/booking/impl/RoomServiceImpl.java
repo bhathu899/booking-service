@@ -6,14 +6,14 @@ import com.booking.integrations.booking.service.RoomService;
 import com.booking.integrations.booking.service.model.Room;
 import com.booking.integrations.booking.service.model.RoomSearchResult;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by KrishnaKo on 08/12/2024
- */
+
 @RequiredArgsConstructor
+@Service
 public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
 
@@ -28,7 +28,7 @@ public class RoomServiceImpl implements RoomService {
                                    .map(room -> new Room(room.getId(),
                                                          room.getRoomName(),
                                                          room.getSize()))
-                                   .collect(Collectors.toList());
+                                   .toList();
         return RoomSearchResult.rooms(roomList);
     }
 }

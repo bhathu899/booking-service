@@ -1,22 +1,21 @@
 package com.booking.api.controller.dto;
 
+import com.booking.validator.ValidBookingTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 import java.time.LocalTime;
 
-/**
- * Created by KrishnaKo on 19/01/2024
- */
-
 @Builder
+@ValidBookingTime
 public record BookingRequestDto(
-        @JsonProperty("startTime") @FutureOrPresent @NotNull LocalTime startTime,
-        @JsonProperty("endTime") @FutureOrPresent @NotNull LocalTime endTime,
-        @JsonProperty("noOfPersons") @Size(min = 2, max = 20) int noOfPersons
+        @JsonProperty("startTime") @NotNull  LocalTime startTime,
+        @JsonProperty("endTime")  @NotNull LocalTime endTime,
+        @JsonProperty("noOfPersons") @Min(value = 2,message = "Min persons must be greater than or equal to 2"  ) @Max(value = 20,message =
+                "Max persons must be less than or equal to 20") int noOfPersons
 ) {
 
 }
